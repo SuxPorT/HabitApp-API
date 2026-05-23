@@ -9,5 +9,5 @@ public class Habit
     public string CompletedDaysRaw { get; set; } = "false,false,false,false,false,false,false";
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? ModifiedAt { get; set; }
-    public bool IsDeleted { get; set; }
+    public bool IsDeleted { get; set; } = false;
 }

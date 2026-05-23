@@ -15,17 +15,10 @@ public class HabitService(IHabitRepository repository) : IHabitService
         => await _repository.GetByIdAsync(id);
 
     public async Task<Habit> AddAsync(Habit habit)
-    {
-        habit.CreatedAt = DateTime.UtcNow;
-        habit.IsDeleted = false;
-        return await _repository.AddAsync(habit);
-    }
+        => await _repository.AddAsync(habit);
 
     public async Task<Habit> UpdateAsync(Habit habit)
-    {
-        habit.ModifiedAt = DateTime.UtcNow;
-        return await _repository.UpdateAsync(habit);
-    }
+        => await _repository.UpdateAsync(habit);
 
     public async Task<bool> DeleteAsync(int id)
         => await _repository.DeleteAsync(id);

@@ -31,7 +31,10 @@ public class HabitRepository(SqliteContext context) : IHabitRepository
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var habit = await GetByIdAsync(id);
+        var habit = await _context.Habits
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
         if (habit == null) return false;
 
         habit.IsDeleted = true;
