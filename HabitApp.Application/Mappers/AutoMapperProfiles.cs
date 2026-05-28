@@ -23,9 +23,12 @@ public class AutoMapperProfiles : Profile
             ));
 
         CreateMap<User, UserDto>()
+            .ForMember(dest => dest.Password, opt => opt.Ignore())
             .ForMember(dest => dest.Habits, opt => opt.Ignore());
+
         CreateMap<UserDto, User>()
             .ForMember(dest => dest.Habits, opt => opt.Ignore());
+
         CreateMap<User, UserResponseDto>();
     }
 }

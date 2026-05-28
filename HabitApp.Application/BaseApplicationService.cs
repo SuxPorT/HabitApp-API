@@ -16,32 +16,32 @@ public abstract class BaseApplicationService<TEntity, TEntityDto>(
     protected readonly IBaseService<TEntity> _service = service;
     protected readonly IMapper _mapper = mapper;
 
-    public async Task<IEnumerable<TEntityDto>> GetAllAsync()
+    public virtual async Task<IEnumerable<TEntityDto>> GetAllAsync()
     {
         var entities = await _service.GetAllAsync();
         return _mapper.Map<IEnumerable<TEntityDto>>(entities);
     }
 
-    public async Task<TEntityDto?> GetByIdAsync(int id)
+    public virtual async Task<TEntityDto?> GetByIdAsync(int id)
     {
         var entity = await _service.GetByIdAsync(id);
         return _mapper.Map<TEntityDto>(entity);
     }
 
-    public async Task<TEntityDto> AddAsync(TEntityDto entityDto)
+    public virtual async Task<TEntityDto> AddAsync(TEntityDto entityDto)
     {
         var entity = _mapper.Map<TEntity>(entityDto);
         var result = await _service.AddAsync(entity);
         return _mapper.Map<TEntityDto>(result);
     }
 
-    public async Task<TEntityDto> UpdateAsync(TEntityDto entityDto)
+    public virtual async Task<TEntityDto> UpdateAsync(TEntityDto entityDto)
     {
         var entity = _mapper.Map<TEntity>(entityDto);
         var result = await _service.UpdateAsync(entity);
         return _mapper.Map<TEntityDto>(result);
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public virtual async Task<bool> DeleteAsync(int id)
         => await _service.DeleteAsync(id);
 }

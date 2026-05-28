@@ -10,20 +10,20 @@ public abstract class BaseRepository<TEntity>(SqliteContext context)
 {
     protected readonly SqliteContext _context = context;
 
-    public async Task<IEnumerable<TEntity>> GetAllAsync()
+    public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
         => await _context.Set<TEntity>().ToListAsync();
 
-    public async Task<TEntity?> GetByIdAsync(int id)
+    public virtual async Task<TEntity?> GetByIdAsync(int id)
         => await _context.Set<TEntity>().FindAsync(id);
 
-    public async Task<TEntity> AddAsync(TEntity entity)
+    public virtual async Task<TEntity> AddAsync(TEntity entity)
     {
         await _context.Set<TEntity>().AddAsync(entity);
         await _context.SaveChangesAsync();
         return entity;
     }
 
-    public async Task<TEntity> UpdateAsync(TEntity entity)
+    public virtual async Task<TEntity> UpdateAsync(TEntity entity)
     {
         var existingEntity = await _context.Set<TEntity>().FindAsync(entity.Id)
             ?? throw new KeyNotFoundException($"Entidade com ID {entity.Id} não encontrada.");
@@ -34,7 +34,7 @@ public abstract class BaseRepository<TEntity>(SqliteContext context)
         return existingEntity;
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public virtual async Task<bool> DeleteAsync(int id)
     {
         var entity = await _context.Set<TEntity>()
                         .IgnoreQueryFilters()
