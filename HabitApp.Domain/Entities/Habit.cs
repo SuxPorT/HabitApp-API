@@ -10,4 +10,7 @@ public class Habit
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? ModifiedAt { get; set; }
     public bool IsDeleted { get; set; } = false;
+
+    public int UserId { get; set; }
+    public User? User { get; set; }
 }

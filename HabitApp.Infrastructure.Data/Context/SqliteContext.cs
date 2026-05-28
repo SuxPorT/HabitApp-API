@@ -6,12 +6,31 @@ namespace HabitApp.Infrastructure.Data.Context;
 
 public class SqliteContext(DbContextOptions<SqliteContext> options) : DbContext(options)
 {
+    public DbSet<User> Users { get; set; }
     public DbSet<Habit> Habits { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Habit>().HasQueryFilter(h => !h.IsDeleted);
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Email).IsRequired();
+            entity.HasIndex(e => e.Email).IsUnique();
+        });
+
+        modelBuilder.Entity<Habit>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasOne(h => h.User)
+                  .WithMany(u => u.Habits)
+                  .HasForeignKey(h => h.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<User>().HasQueryFilter(h => !h.IsDeleted);
+        modelBuilder.Entity<Habit>().HasQueryFilter(h => !h.IsDeleted);
     }
 
     public override int SaveChanges()

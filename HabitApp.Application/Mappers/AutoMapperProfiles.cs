@@ -21,5 +21,11 @@ public class AutoMapperProfiles : Profile
                     ? "false,false,false,false,false,false,false"
                     : string.Join(",", src.CompletedDays.Select(b => b.ToString().ToLower()))
             ));
+
+        CreateMap<User, UserDto>()
+            .ForMember(dest => dest.Habits, opt => opt.Ignore());
+        CreateMap<UserDto, User>()
+            .ForMember(dest => dest.Habits, opt => opt.Ignore());
+        CreateMap<User, UserResponseDto>();
     }
 }

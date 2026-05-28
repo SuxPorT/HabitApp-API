@@ -12,6 +12,10 @@ public static class ModuleIOC
 {
     public static void RegisterServices(IServiceCollection services)
     {
+        services.AddScoped<IUserApplicationService, UserApplicationService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IUserRepository, UserRepository>();
+
         services.AddScoped<IHabitApplicationService, HabitApplicationService>();
         services.AddScoped<IHabitService, HabitService>();
         services.AddScoped<IHabitRepository, HabitRepository>();
