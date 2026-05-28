@@ -47,7 +47,7 @@ public class SqliteContext(DbContextOptions<SqliteContext> options) : DbContext(
 
     private void ConfigureDates()
     {
-        var entries = ChangeTracker.Entries<Habit>();
+        var entries = ChangeTracker.Entries<BaseEntity>();
         var brazilDatetime = DateTimeUtils.GetHorarioBrasilia();
 
         foreach (var entry in entries)

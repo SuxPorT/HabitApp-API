@@ -2,11 +2,6 @@
 
 namespace HabitApp.Domain.Services.Interfaces;
 
-public interface IHabitService
+public interface IHabitService : IBaseService<Habit>
 {
-    Task<IEnumerable<Habit>> GetAllAsync();
-    Task<Habit?> GetByIdAsync(int id);
-    Task<Habit> AddAsync(Habit habit);
-    Task<Habit> UpdateAsync(Habit habit);
-    Task<bool> DeleteAsync(int id);
 }

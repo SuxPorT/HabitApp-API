@@ -2,11 +2,6 @@
 
 namespace HabitApp.Infrastructure.Data.Interfaces;
 
-public interface IHabitRepository
+public interface IHabitRepository : IBaseRepository<Habit>
 {
-    Task<IEnumerable<Habit>> GetAllAsync();
-    Task<Habit?> GetByIdAsync(int id);
-    Task<Habit> AddAsync(Habit habit);
-    Task<Habit> UpdateAsync(Habit habit);
-    Task<bool> DeleteAsync(int id);
 }

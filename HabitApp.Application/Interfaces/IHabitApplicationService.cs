@@ -2,11 +2,6 @@
 
 namespace HabitApp.Application.Interfaces;
 
-public interface IHabitApplicationService
+public interface IHabitApplicationService : IBaseApplicationService<HabitDto>
 {
-    Task<IEnumerable<HabitDto>> GetAllAsync();
-    Task<HabitDto?> GetByIdAsync(int id);
-    Task<HabitDto> AddAsync(HabitDto habitDto);
-    Task<HabitDto> UpdateAsync(HabitDto habitDto);
-    Task<bool> DeleteAsync(int id);
 }
