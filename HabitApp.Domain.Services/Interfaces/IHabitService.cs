@@ -4,4 +4,5 @@ namespace HabitApp.Domain.Services.Interfaces;
 
 public interface IHabitService : IBaseService<Habit>
 {
+    Task<IEnumerable<Habit>> GetByUserIdAsync(int userId);
 }

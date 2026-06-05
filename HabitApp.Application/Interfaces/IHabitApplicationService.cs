@@ -4,4 +4,5 @@ namespace HabitApp.Application.Interfaces;
 
 public interface IHabitApplicationService : IBaseApplicationService<HabitDto>
 {
+    Task<IEnumerable<HabitDto>> GetByUserIdAsync(int userId);
 }
