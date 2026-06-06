@@ -24,7 +24,7 @@ public class ReminderServiceTests
         var reminder = Assert.Single(reminders);
         Assert.Equal("Reading", reminder.Title);
         Assert.Equal(new DateOnly(2026, 6, 5), reminder.ScheduledDate);
-        Assert.Equal("Time for Reading.", reminder.Message);
+        Assert.Equal("Hora de Reading.", reminder.Message);
     }
 
     [Fact]
@@ -66,7 +66,42 @@ public class ReminderServiceTests
 
         var risk = Assert.Single(risks);
         Assert.Equal(4, risk.CurrentStreak);
-        Assert.Contains("Your 4-day streak is still alive", risk.Message);
+        Assert.Contains("Sua sequência de 4 dias ainda está ativa", risk.Message);
+    }
+
+    [Fact]
+    public async Task OpenHabitRiskMessageUsesBrazilianPortuguese()
+    {
+        var dateService = new FixedDateService(new DateTime(2026, 6, 5, 13, 0, 0));
+        var hydration = CreateHabit(1, "Beber Água", "Daily", reminderTime: TimeSpan.FromHours(9));
+        var service = CreateService(dateService, [hydration]);
+
+        var risks = await service.GetHabitsAtRiskAsync(1);
+
+        var risk = Assert.Single(risks);
+        Assert.Equal("Beber Água está programado para hoje e ainda está aberto.", risk.Message);
+        Assert.DoesNotContain("is scheduled today", risk.Message);
+    }
+
+    [Fact]
+    public async Task SmartMotivationBestWeekdayUsesBrazilianPortuguese()
+    {
+        var dateService = new FixedDateService(new DateTime(2026, 6, 6, 13, 0, 0));
+        var hydration = CreateHabit(
+            1,
+            "Beber Água",
+            "SpecificDaysOfWeek",
+            """{"daysOfWeek":["Friday"]}""",
+            TimeSpan.FromHours(9));
+        hydration.CreatedAt = new DateTime(2026, 6, 5, 8, 0, 0);
+        AddCompletions(hydration, new DateOnly(2026, 6, 5));
+        var service = CreateService(dateService, [hydration]);
+
+        var dashboard = await service.GetDashboardAsync(1);
+
+        Assert.Contains("Você tem mais sucesso em sextas-feiras.", dashboard.SmartMotivations);
+        Assert.DoesNotContain(dashboard.SmartMotivations, message => message.Contains("You are"));
+        Assert.DoesNotContain(dashboard.SmartMotivations, message => message.Contains("Fridays"));
     }
 
     [Fact]
@@ -93,7 +128,7 @@ public class ReminderServiceTests
             new ReminderGenerationOptions(Mode: "Smart", PersonalRecordWarningDays: 2));
 
         var payload = Assert.Single(payloads, item => item.NotificationType == "StreakRisk");
-        Assert.Equal("Only 1 day away from your all-time record.", payload.Body);
+        Assert.Equal("Falta apenas 1 dia para seu recorde histórico.", payload.Body);
     }
 
     [Fact]
@@ -110,7 +145,7 @@ public class ReminderServiceTests
 
         var payload = Assert.Single(payloads);
         Assert.Equal("GroupedReminder", payload.NotificationType);
-        Assert.Equal("You have 2 habits remaining today.", payload.Body);
+        Assert.Equal("Você tem 2 hábitos restantes hoje.", payload.Body);
     }
 
     [Fact]

@@ -67,7 +67,7 @@ public class AnalyticsService(
 
         if (habit is null || habit.UserId != userId)
         {
-            throw new KeyNotFoundException($"Habit with ID {habitId} was not found for user {userId}.");
+            throw new KeyNotFoundException($"Hábito com ID {habitId} não encontrado para o usuário {userId}.");
         }
 
         var createdDate = GetCreatedDate(habit, today);
@@ -123,9 +123,9 @@ public class AnalyticsService(
         return new TrendAnalytics(
             userId,
             today,
-            BuildTrendWindow("Last 7 days", habits, today, 7),
-            BuildTrendWindow("Last 30 days", habits, today, 30),
-            BuildTrendWindow("Last 90 days", habits, today, 90));
+            BuildTrendWindow("Últimos 7 dias", habits, today, 7),
+            BuildTrendWindow("Últimos 30 dias", habits, today, 30),
+            BuildTrendWindow("Últimos 90 dias", habits, today, 90));
     }
 
     private async Task<List<Habit>> GetActiveHabitsAsync(int userId)

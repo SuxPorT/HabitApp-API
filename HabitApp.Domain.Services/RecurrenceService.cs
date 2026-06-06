@@ -56,11 +56,11 @@ public class RecurrenceService : IRecurrenceService
     {
         if (string.IsNullOrWhiteSpace(recurrenceType))
         {
-            throw new ArgumentException("RecurrenceType is required.");
+            throw new ArgumentException("RecurrenceType é obrigatório.");
         }
 
         return NormalizeRecurrenceType(recurrenceType)
-            ?? throw new ArgumentException($"Unsupported recurrence type: {recurrenceType}.");
+            ?? throw new ArgumentException($"Tipo de recorrência não aceito: {recurrenceType}.");
     }
 
     private static bool IsSpecificDayDue(string? recurrenceConfig, DateOnly date)
@@ -278,11 +278,25 @@ public class RecurrenceService : IRecurrenceService
             "thu" or "thur" or "thurs" => DayOfWeek.Thursday,
             "fri" => DayOfWeek.Friday,
             "sat" => DayOfWeek.Saturday,
+            "domingo" or "domingos" => DayOfWeek.Sunday,
+            "segunda" or "segunda-feira" or "segundas-feiras" => DayOfWeek.Monday,
+            "terça" or "terca" or "terça-feira" or "terca-feira" or "terças-feiras" or "tercas-feiras" => DayOfWeek.Tuesday,
+            "quarta" or "quarta-feira" or "quartas-feiras" => DayOfWeek.Wednesday,
+            "quinta" or "quinta-feira" or "quintas-feiras" => DayOfWeek.Thursday,
+            "sexta" or "sexta-feira" or "sextas-feiras" => DayOfWeek.Friday,
+            "sábado" or "sabado" or "sábados" or "sabados" => DayOfWeek.Saturday,
             _ => default
         };
 
         return normalized.ToLowerInvariant() is "sun" or "mon" or "tue" or "tues" or "wed"
-            or "thu" or "thur" or "thurs" or "fri" or "sat";
+            or "thu" or "thur" or "thurs" or "fri" or "sat"
+            or "domingo" or "domingos"
+            or "segunda" or "segunda-feira" or "segundas-feiras"
+            or "terça" or "terca" or "terça-feira" or "terca-feira" or "terças-feiras" or "tercas-feiras"
+            or "quarta" or "quarta-feira" or "quartas-feiras"
+            or "quinta" or "quinta-feira" or "quintas-feiras"
+            or "sexta" or "sexta-feira" or "sextas-feiras"
+            or "sábado" or "sabado" or "sábados" or "sabados";
     }
 
     private static string NormalizeRecurrenceTypeOrDefault(string? recurrenceType)

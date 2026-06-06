@@ -51,6 +51,18 @@ public class RecurrenceServiceTests
     }
 
     [Fact]
+    public void SpecificDaysOfWeekAcceptsBrazilianPortugueseDays()
+    {
+        var habit = CreateHabit(
+            "SpecificDaysOfWeek",
+            """{"daysOfWeek":["segunda-feira","quarta-feira","sexta-feira"]}""");
+
+        Assert.True(_service.IsHabitScheduledForDate(habit, new DateOnly(2026, 6, 1)));
+        Assert.False(_service.IsHabitScheduledForDate(habit, new DateOnly(2026, 6, 2)));
+        Assert.True(_service.IsHabitScheduledForDate(habit, new DateOnly(2026, 6, 5)));
+    }
+
+    [Fact]
     public void EveryXDaysUsesCreatedDateAsAnchor()
     {
         var habit = CreateHabit("EveryXDays", """{"interval":2}""");

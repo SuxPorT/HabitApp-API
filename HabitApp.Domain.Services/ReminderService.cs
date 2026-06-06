@@ -184,8 +184,8 @@ public class ReminderService(
                     habit.ReminderTime,
                     streak,
                     streak > 0
-                        ? $"Complete {habit.Title} today to protect your {streak}-day streak."
-                        : $"{habit.Title} is still open today.");
+                        ? $"Conclua {habit.Title} hoje para proteger sua sequência de {streak} dias."
+                        : $"{habit.Title} ainda está aberto hoje.");
             })
             .OrderByDescending(habit => habit.CurrentStreak)
             .ThenBy(habit => habit.Title)
@@ -355,12 +355,12 @@ public class ReminderService(
 
         if (overview.BestDayOfWeek is not null)
         {
-            messages.Add($"You are most successful on {PluralizeWeekday(overview.BestDayOfWeek.DayOfWeek)}.");
+            messages.Add($"Você tem mais sucesso em {PluralizeWeekday(overview.BestDayOfWeek.DayOfWeek)}.");
         }
 
         if (trends.Last7Days.ScheduledHabits > 0)
         {
-            messages.Add($"You completed {trends.Last7Days.CompletionRate}% of your habits last week.");
+            messages.Add($"Você concluiu {trends.Last7Days.CompletionRate}% dos seus hábitos na semana passada.");
         }
 
         var closestRecord = risks
@@ -370,20 +370,20 @@ public class ReminderService(
 
         if (closestRecord is not null)
         {
-            var dayLabel = closestRecord.DaysUntilPersonalRecord == 1 ? "day" : "days";
-            messages.Add($"You are {closestRecord.DaysUntilPersonalRecord} {dayLabel} away from your longest streak.");
+            var dayLabel = closestRecord.DaysUntilPersonalRecord == 1 ? "dia" : "dias";
+            messages.Add($"Você está a {closestRecord.DaysUntilPersonalRecord} {dayLabel} da sua maior sequência.");
         }
         else if (overview.LongestOverallStreak > overview.CurrentOverallStreak
             && overview.CurrentOverallStreak > 0)
         {
             var daysAway = overview.LongestOverallStreak - overview.CurrentOverallStreak;
-            var dayLabel = daysAway == 1 ? "day" : "days";
-            messages.Add($"You are {daysAway} {dayLabel} away from your longest streak.");
+            var dayLabel = daysAway == 1 ? "dia" : "dias";
+            messages.Add($"Você está a {daysAway} {dayLabel} da sua maior sequência.");
         }
 
         if (overview.BestHabit is not null)
         {
-            messages.Add($"{overview.BestHabit.Title} is currently your strongest habit.");
+            messages.Add($"{overview.BestHabit.Title} é seu hábito mais forte no momento.");
         }
 
         return messages
@@ -399,13 +399,13 @@ public class ReminderService(
         UserNotificationPreference preferences)
     {
         var count = remainingToday.Count;
-        var title = count == 1 ? "One habit remaining" : $"{count} habits remaining";
+        var title = count == 1 ? "1 hábito restante" : $"{count} hábitos restantes";
 
         return new NotificationPayload(
             $"grouped-reminder-{_dateService.Today:yyyyMMdd}",
             "GroupedReminder",
             title,
-            count == 1 ? "You have 1 habit remaining today." : $"You have {count} habits remaining today.",
+            count == 1 ? "Você tem 1 hábito restante hoje." : $"Você tem {count} hábitos restantes hoje.",
             "normal",
             now,
             "America/Sao_Paulo",
@@ -424,7 +424,7 @@ public class ReminderService(
         => new(
             $"motivation-{userId}-{now:yyyyMMddHHmm}",
             "Motivation",
-            "Keep your rhythm",
+            "Mantenha seu ritmo",
             message,
             "low",
             now,
@@ -463,7 +463,7 @@ public class ReminderService(
             longestStreak,
             daysUntilRecord,
             "medium",
-            $"{habit.Title} is scheduled today and still open.");
+            $"{habit.Title} está programado para hoje e ainda está aberto.");
 
     private HabitStreakRiskReminder BuildStreakRisk(
         Habit habit,
@@ -475,7 +475,7 @@ public class ReminderService(
         var riskLevel = liveStreak >= 14 || isCloseToRecord ? "high" : "medium";
         var message = isCloseToRecord && daysUntilRecord is not null
             ? BuildRecordMessage(daysUntilRecord.Value)
-            : $"Your {liveStreak}-day streak is still alive. Complete {habit.Title} today to keep it going.";
+            : $"Sua sequência de {liveStreak} dias ainda está ativa. Conclua {habit.Title} hoje para mantê-la.";
 
         return new HabitStreakRiskReminder(
             habit.Id,
@@ -494,10 +494,10 @@ public class ReminderService(
     {
         if (daysUntilRecord <= 1)
         {
-            return "Only 1 day away from your all-time record.";
+            return "Falta apenas 1 dia para seu recorde histórico.";
         }
 
-        return $"Only {daysUntilRecord} days away from your all-time record.";
+        return $"Faltam apenas {daysUntilRecord} dias para seu recorde histórico.";
     }
 
     private string BuildStandardReminderMessage(Habit habit)
@@ -511,10 +511,10 @@ public class ReminderService(
 
         if (reminderType == "Motivation")
         {
-            return $"A small check-in keeps {habit.Title} moving.";
+            return $"Uma pequena marcação mantém {habit.Title} em movimento.";
         }
 
-        return $"Time for {habit.Title}.";
+        return $"Hora de {habit.Title}.";
     }
 
     private async Task<List<Habit>> GetActiveHabitsAsync(int userId)
@@ -645,9 +645,17 @@ public class ReminderService(
         => string.Equals(riskLevel, "high", StringComparison.OrdinalIgnoreCase) ? 2 : 1;
 
     private static string PluralizeWeekday(string dayOfWeek)
-        => dayOfWeek.EndsWith("s", StringComparison.OrdinalIgnoreCase)
-            ? dayOfWeek
-            : $"{dayOfWeek}s";
+        => dayOfWeek.Trim().ToLowerInvariant() switch
+        {
+            "sunday" or "sundays" or "domingo" or "domingos" => "domingos",
+            "monday" or "mondays" or "segunda" or "segunda-feira" or "segundas-feiras" => "segundas-feiras",
+            "tuesday" or "tuesdays" or "terça" or "terca" or "terça-feira" or "terca-feira" or "terças-feiras" or "tercas-feiras" => "terças-feiras",
+            "wednesday" or "wednesdays" or "quarta" or "quarta-feira" or "quartas-feiras" => "quartas-feiras",
+            "thursday" or "thursdays" or "quinta" or "quinta-feira" or "quintas-feiras" => "quintas-feiras",
+            "friday" or "fridays" or "sexta" or "sexta-feira" or "sextas-feiras" => "sextas-feiras",
+            "saturday" or "saturdays" or "sábado" or "sabado" or "sábados" or "sabados" => "sábados",
+            _ => dayOfWeek
+        };
 
     private static IReadOnlyDictionary<string, string> BuildMetadata(
         params (string Key, string Value)[] values)

@@ -1,3 +1,4 @@
+using System.Globalization;
 using HabitApp.Domain.Entities;
 using HabitApp.Domain.Services.Interfaces;
 using HabitApp.Domain.Services.Models;
@@ -116,41 +117,41 @@ public class MotivationService(
         {
             CreateChallenge(
                 "monthly-consistency",
-                "Monthly Consistency",
-                "Reach an 85% completion rate on scheduled habits this month.",
+                "Consistência mensal",
+                "Alcance uma taxa de conclusão de 85% nos hábitos programados deste mês.",
                 "calendar_month",
                 monthCompletionRate,
                 85,
-                "Keep the month steady."),
+                "Mantenha o mês estável."),
             CreateChallenge(
                 "perfect-days",
-                "Perfect Days",
-                "Finish every scheduled habit on 10 days this month.",
+                "Dias perfeitos",
+                "Finalize todos os hábitos programados em 10 dias deste mês.",
                 "verified",
                 perfectDays,
                 10,
-                "Stack more perfect days."),
+                "Acumule mais dias perfeitos."),
             CreateChallenge(
                 "completion-volume",
-                "Completion Volume",
-                $"Complete {completionTarget} scheduled habit checks this month.",
+                "Volume de conclusões",
+                $"Conclua {completionTarget} marcações de hábitos programados neste mês.",
                 "done_all",
                 completedThisMonth,
                 completionTarget,
-                "Each scheduled check moves this forward."),
+                "Cada marcação programada avança este desafio."),
             CreateChallenge(
                 "protect-streaks",
-                "Protect Your Streaks",
-                "Keep every active habit on a live streak.",
+                "Proteja suas sequências",
+                "Mantenha todos os hábitos ativos com sequência em andamento.",
                 "local_fire_department",
                 protectedHabits,
                 Math.Max(1, overview.TotalActiveHabits),
-                "Bring every habit back onto a streak.")
+                "Traga todos os hábitos de volta para uma sequência.")
         };
 
         return new MonthlyChallengeSet(
             userId,
-            today.ToString("MMMM yyyy"),
+            today.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("pt-BR")),
             startDate,
             today,
             challenges);
@@ -209,10 +210,10 @@ public class MotivationService(
             ? "high"
             : "medium";
         var message = isScheduledToday && isMissedToday
-            ? $"{analytics.Title} is scheduled today and still open."
+            ? $"{analytics.Title} está programado para hoje e ainda está aberto."
             : completionRate < 40
-                ? $"{analytics.Title} is below 40% consistency."
-                : $"{analytics.Title} has missed scheduled days this week.";
+                ? $"{analytics.Title} está abaixo de 40% de consistência."
+                : $"{analytics.Title} tem dias programados não concluídos nesta semana.";
 
         return new MotivationHabitAtRisk(
             analytics.HabitId,
@@ -261,7 +262,7 @@ public class MotivationService(
                 habit.TotalCompletions,
                 habit.LastCompletedDate,
                 "new",
-                "Complete this habit to start a streak.");
+                "Conclua este hábito para iniciar uma sequência.");
         }
 
         if (risk is not null)
@@ -295,7 +296,7 @@ public class MotivationService(
                 habit.TotalCompletions,
                 habit.LastCompletedDate,
                 "protected",
-                $"{habit.Title} is protected today.");
+                $"{habit.Title} está protegido hoje.");
         }
 
         return new HabitStreakStatus(
@@ -310,7 +311,7 @@ public class MotivationService(
             habit.TotalCompletions,
             habit.LastCompletedDate,
             "rebuilding",
-            $"Restart {habit.Title} with the next scheduled completion.");
+            $"Reinicie {habit.Title} com a próxima conclusão programada.");
     }
 
     private static IReadOnlyCollection<AchievementProgress> BuildAchievements(
@@ -327,103 +328,103 @@ public class MotivationService(
         [
             CreateAchievement(
                 "first-check",
-                "First Check",
-                "Complete your first scheduled habit.",
+                "Primeira marcação",
+                "Conclua seu primeiro hábito programado.",
                 "check_circle",
-                "Foundation",
+                "Fundação",
                 overview.TotalCompletions,
                 1,
-                "One check starts the system."),
+                "Uma marcação inicia o sistema."),
             CreateAchievement(
                 "ten-checks",
-                "Ten Checks",
-                "Reach 10 total habit completions.",
+                "Dez marcações",
+                "Alcance 10 conclusões de hábitos no total.",
                 "done_all",
-                "Foundation",
+                "Fundação",
                 overview.TotalCompletions,
                 10,
-                "Build a visible base."),
+                "Construa uma base visível."),
             CreateAchievement(
                 "hundred-checks",
-                "Hundred Checks",
-                "Reach 100 total habit completions.",
+                "Cem marcações",
+                "Alcance 100 conclusões de hábitos no total.",
                 "workspace_premium",
-                "Milestone",
+                "Marco",
                 overview.TotalCompletions,
                 100,
-                "Long-term progress is compounding."),
+                "O progresso de longo prazo está se acumulando."),
             CreateAchievement(
                 "week-streak",
-                "Seven-Day Streak",
-                "Maintain a perfect overall streak for 7 scheduled days.",
+                "Sequência de sete dias",
+                "Mantenha uma sequência geral perfeita por 7 dias programados.",
                 "local_fire_department",
-                "Streak",
+                "Sequência",
                 overview.LongestOverallStreak,
                 7,
-                "Protect every scheduled day for a week."),
+                "Proteja todos os dias programados por uma semana."),
             CreateAchievement(
                 "month-streak",
-                "Thirty-Day Streak",
-                "Maintain a perfect overall streak for 30 scheduled days.",
+                "Sequência de trinta dias",
+                "Mantenha uma sequência geral perfeita por 30 dias programados.",
                 "bolt",
-                "Streak",
+                "Sequência",
                 overview.LongestOverallStreak,
                 30,
-                "A full month of protected habits."),
+                "Um mês inteiro de hábitos protegidos."),
             CreateAchievement(
                 "consistent",
-                "Reliable Rhythm",
-                "Reach a 70% recurrence-aware completion rate.",
+                "Ritmo confiável",
+                "Alcance uma taxa de conclusão de 70% considerando a recorrência.",
                 "trending_up",
-                "Consistency",
+                "Consistência",
                 overview.AverageCompletionRate,
                 70,
-                "Keep scheduled habits above 70%."),
+                "Mantenha hábitos programados acima de 70%."),
             CreateAchievement(
                 "elite-consistency",
-                "Elite Consistency",
-                "Reach a 90% recurrence-aware completion rate.",
+                "Consistência de elite",
+                "Alcance uma taxa de conclusão de 90% considerando a recorrência.",
                 "stars",
-                "Consistency",
+                "Consistência",
                 overview.AverageCompletionRate,
                 90,
-                "A premium rhythm across scheduled days."),
+                "Um ritmo excelente nos dias programados."),
             CreateAchievement(
                 "perfect-week",
-                "Perfect Week",
-                "Complete every scheduled habit for 7 scheduled days in a row.",
+                "Semana perfeita",
+                "Conclua todos os hábitos programados por 7 dias programados seguidos.",
                 "verified",
-                "Consistency",
+                "Consistência",
                 perfectStreak,
                 7,
-                "Stack seven perfect scheduled days."),
+                "Acumule sete dias programados perfeitos."),
             CreateAchievement(
                 "flow-builder",
-                "Flow Builder",
-                "Keep 3 active habits on streaks of at least 3 days.",
+                "Construtor de fluxo",
+                "Mantenha 3 hábitos ativos em sequências de pelo menos 3 dias.",
                 "account_tree",
-                "Habit Mix",
+                "Combinação de hábitos",
                 protectedHabits,
                 3,
-                "Create consistency across multiple habits."),
+                "Crie consistência em vários hábitos."),
             CreateAchievement(
                 "strong-week",
-                "Strong Week",
-                "Reach an 80% completion rate in the last 7 days.",
+                "Semana forte",
+                "Alcance uma taxa de conclusão de 80% nos últimos 7 dias.",
                 "insights",
-                "Momentum",
+                "Impulso",
                 trends.Last7Days.CompletionRate,
                 80,
-                "Finish the week above 80%."),
+                "Finalize a semana acima de 80%."),
             CreateAchievement(
                 "consistency-score",
-                "Consistency Score",
-                "Reach an 85 motivation consistency score.",
+                "Pontuação de consistência",
+                "Alcance 85 pontos de consistência motivacional.",
                 "speed",
-                "Motivation",
+                "Motivação",
                 consistencyScore,
                 85,
-                "Balance completion rate, weekly rhythm and streak.")
+                "Equilibre taxa de conclusão, ritmo semanal e sequência.")
         ];
     }
 
@@ -450,7 +451,7 @@ public class MotivationService(
             targetValue,
             progressPercent,
             isUnlocked,
-            isUnlocked ? "Unlocked" : lockedMessage);
+            isUnlocked ? "Liberada" : lockedMessage);
     }
 
     private static MonthlyChallenge CreateChallenge(
@@ -474,7 +475,7 @@ public class MotivationService(
             targetValue,
             progressPercent,
             isCompleted,
-            isCompleted ? "Completed" : activeMessage);
+            isCompleted ? "Concluído" : activeMessage);
     }
 
     private static IReadOnlyCollection<string> BuildMotivationalInsights(
@@ -488,22 +489,23 @@ public class MotivationService(
 
         if (overview.CurrentOverallStreak > 0)
         {
-            insights.Add($"Your overall streak is {overview.CurrentOverallStreak} scheduled days.");
+            insights.Add($"Sua sequência geral tem {overview.CurrentOverallStreak} dias programados.");
         }
 
         if (trends.Last7Days.CompletionRate > trends.Last30Days.CompletionRate)
         {
-            insights.Add("Your rhythm is improving this week.");
+            insights.Add("Seu ritmo está melhorando nesta semana.");
         }
 
         if (risks.Count > 0)
         {
-            insights.Add($"{risks.First().Title} needs attention today.");
+            insights.Add($"{risks.First().Title} precisa de atenção hoje.");
         }
 
         if (achievements.UnlockedCount > 0)
         {
-            insights.Add($"{achievements.UnlockedCount} achievements are already unlocked.");
+            var achievementLabel = achievements.UnlockedCount == 1 ? "conquista liberada" : "conquistas liberadas";
+            insights.Add($"{achievements.UnlockedCount} {achievementLabel}.");
         }
 
         var closestChallenge = challenges.Challenges
@@ -513,12 +515,12 @@ public class MotivationService(
 
         if (closestChallenge is not null)
         {
-            insights.Add($"{closestChallenge.Title} is {closestChallenge.ProgressPercent}% complete.");
+            insights.Add($"{closestChallenge.Title} está {closestChallenge.ProgressPercent}% completo.");
         }
 
         if (insights.Count == 0)
         {
-            insights.Add("Complete a few scheduled habits to activate your motivation system.");
+            insights.Add("Conclua alguns hábitos programados para ativar seu sistema de motivação.");
         }
 
         return insights.Take(4).ToList();
@@ -534,7 +536,7 @@ public class MotivationService(
 
         if (overview.CurrentOverallStreak > 0)
         {
-            insights.Add($"You are on a {overview.CurrentOverallStreak}-day overall streak.");
+            insights.Add($"Você está em uma sequência geral de {overview.CurrentOverallStreak} dias.");
         }
 
         var strongest = streaks
@@ -544,22 +546,22 @@ public class MotivationService(
 
         if (strongest is not null)
         {
-            insights.Add($"{strongest.Title} has your strongest live streak.");
+            insights.Add($"{strongest.Title} tem sua sequência ativa mais forte.");
         }
 
         if (risks.Count > 0)
         {
-            insights.Add($"{risks.Count} habit{(risks.Count == 1 ? " is" : "s are")} at risk.");
+            insights.Add(risks.Count == 1 ? "1 hábito em risco." : $"{risks.Count} hábitos em risco.");
         }
 
         if (trends.Last7Days.CompletionRate >= 80)
         {
-            insights.Add("This week is keeping your streak foundation strong.");
+            insights.Add("Esta semana mantém forte a base da sua sequência.");
         }
 
         if (insights.Count == 0)
         {
-            insights.Add("Complete a scheduled habit to begin a new streak.");
+            insights.Add("Conclua um hábito programado para iniciar uma nova sequência.");
         }
 
         return insights.Take(4).ToList();

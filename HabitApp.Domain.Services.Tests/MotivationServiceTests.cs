@@ -79,7 +79,7 @@ public class MotivationServiceTests
         var perfectDays = challenges.Challenges.Single(challenge => challenge.Id == "perfect-days");
         var volume = challenges.Challenges.Single(challenge => challenge.Id == "completion-volume");
 
-        Assert.Equal("June 2026", challenges.MonthLabel);
+        Assert.Equal("junho 2026", challenges.MonthLabel);
         Assert.Equal(70, consistency.CurrentValue);
         Assert.False(consistency.IsCompleted);
         Assert.Equal(2, perfectDays.CurrentValue);

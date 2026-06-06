@@ -38,7 +38,7 @@ public class HabitService(
 
         if (!_recurrenceService.IsHabitScheduledForDate(habit, today))
         {
-            throw new InvalidOperationException("Habit is not scheduled for today.");
+            throw new InvalidOperationException("O hábito não está programado para hoje.");
         }
 
         var now = _dateService.Now;
@@ -169,7 +169,7 @@ public class HabitService(
     {
         if (completedDays.Length != 7)
         {
-            throw new ArgumentException("CompletedDays must contain exactly seven values.");
+            throw new ArgumentException("CompletedDays deve conter exatamente sete valores.");
         }
 
         var habit = await GetRequiredHabitAsync(habitId);
@@ -206,7 +206,7 @@ public class HabitService(
     private async Task<Habit> GetRequiredHabitAsync(int habitId)
     {
         return await _habitRepository.GetByIdWithCompletionsAsync(habitId)
-            ?? throw new KeyNotFoundException($"Habit with ID {habitId} was not found.");
+            ?? throw new KeyNotFoundException($"Hábito com ID {habitId} não encontrado.");
     }
 
     private HabitDashboardItem BuildDashboardItem(Habit habit, DateOnly today)

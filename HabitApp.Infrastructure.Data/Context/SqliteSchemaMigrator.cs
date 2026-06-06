@@ -40,6 +40,7 @@ public static class SqliteSchemaMigrator
             await CreateHabitCompletionsTableAsync(connection);
             await CreateUserNotificationPreferencesTableAsync(connection);
             await ImportLegacyCompletedDaysAsync(connection);
+            await LocalizeLegacyTextDataAsync(connection);
         }
         finally
         {
@@ -263,6 +264,125 @@ public static class SqliteSchemaMigrator
         AddParameter(command, "$modifiedAt", DBNull.Value);
 
         await command.ExecuteNonQueryAsync();
+    }
+
+    private static async Task LocalizeLegacyTextDataAsync(DbConnection connection)
+    {
+        await LocalizeLegacyHabitTitlesAsync(connection);
+        await LocalizeLegacyHabitCategoriesAsync(connection);
+        await LocalizeLegacyReminderMessagesAsync(connection);
+    }
+
+    private static async Task LocalizeLegacyHabitTitlesAsync(DbConnection connection)
+    {
+        if (!await ColumnExistsAsync(connection, "Habits", "Title"))
+        {
+            return;
+        }
+
+        await ExecuteNonQueryAsync(
+            connection,
+            """
+            UPDATE "Habits"
+            SET "Title" = CASE TRIM("Title")
+                WHEN 'Beber Agua' THEN 'Beber Água'
+                WHEN 'Drink Water' THEN 'Beber Água'
+                WHEN 'Water' THEN 'Água'
+                WHEN 'Reading' THEN 'Leitura'
+                WHEN 'Meditation' THEN 'Meditação'
+                WHEN 'Workout' THEN 'Treino'
+                WHEN 'Exercise' THEN 'Exercício'
+                WHEN 'Journal' THEN 'Diário'
+                WHEN 'Run' THEN 'Corrida'
+                ELSE "Title"
+            END
+            WHERE "IsDeleted" = 0
+              AND TRIM("Title") IN (
+                'Beber Agua',
+                'Drink Water',
+                'Water',
+                'Reading',
+                'Meditation',
+                'Workout',
+                'Exercise',
+                'Journal',
+                'Run'
+              );
+            """);
+    }
+
+    private static async Task LocalizeLegacyHabitCategoriesAsync(DbConnection connection)
+    {
+        if (!await ColumnExistsAsync(connection, "Habits", "Category"))
+        {
+            return;
+        }
+
+        await ExecuteNonQueryAsync(
+            connection,
+            """
+            UPDATE "Habits"
+            SET "Category" = CASE TRIM("Category")
+                WHEN 'Personal' THEN 'Pessoal'
+                WHEN 'Health' THEN 'Saúde'
+                WHEN 'Fitness' THEN 'Atividade física'
+                WHEN 'Wellness' THEN 'Bem-estar'
+                WHEN 'Learning' THEN 'Aprendizado'
+                WHEN 'Work' THEN 'Trabalho'
+                ELSE "Category"
+            END
+            WHERE "IsDeleted" = 0
+              AND TRIM("Category") IN (
+                'Personal',
+                'Health',
+                'Fitness',
+                'Wellness',
+                'Learning',
+                'Work'
+              );
+            """);
+    }
+
+    private static async Task LocalizeLegacyReminderMessagesAsync(DbConnection connection)
+    {
+        if (!await ColumnExistsAsync(connection, "Habits", "ReminderMessage"))
+        {
+            return;
+        }
+
+        await ExecuteNonQueryAsync(
+            connection,
+            """
+            UPDATE "Habits"
+            SET "ReminderMessage" = 'Hora de ' || SUBSTR("ReminderMessage", LENGTH('Time for ') + 1)
+            WHERE "IsDeleted" = 0
+              AND "ReminderMessage" LIKE 'Time for %.';
+            """);
+
+        await ExecuteNonQueryAsync(
+            connection,
+            """
+            UPDATE "Habits"
+            SET "ReminderMessage" = 'Conclua ' ||
+                SUBSTR(
+                    "ReminderMessage",
+                    LENGTH('Complete ') + 1,
+                    INSTR("ReminderMessage", ' today to protect') - LENGTH('Complete ') - 1
+                ) ||
+                ' hoje para proteger sua sequência.'
+            WHERE "IsDeleted" = 0
+              AND "ReminderMessage" LIKE 'Complete % today to protect your %-day streak.'
+              AND INSTR("ReminderMessage", ' today to protect') > 0;
+            """);
+
+        await ExecuteNonQueryAsync(
+            connection,
+            """
+            UPDATE "Habits"
+            SET "ReminderMessage" = REPLACE("ReminderMessage", ' is still open today.', ' ainda está aberto hoje.')
+            WHERE "IsDeleted" = 0
+              AND "ReminderMessage" LIKE '% is still open today.';
+            """);
     }
 
     private static async Task ExecuteNonQueryAsync(DbConnection connection, string commandText)
