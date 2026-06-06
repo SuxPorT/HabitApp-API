@@ -9,18 +9,17 @@ public class AutoMapperProfiles : Profile
     public AutoMapperProfiles()
     {
         CreateMap<Habit, HabitDto>()
-            .ForMember(dest => dest.CompletedDays, opt => opt.MapFrom(src =>
-                string.IsNullOrEmpty(src.CompletedDaysRaw)
-                    ? new bool[7]
-                    : src.CompletedDaysRaw.Split(',', StringSplitOptions.None).Select(bool.Parse).ToArray()
-            ));
+            .ForMember(dest => dest.Streak, opt => opt.Ignore())
+            .ForMember(dest => dest.CompletedDays, opt => opt.Ignore());
 
         CreateMap<HabitDto, Habit>()
-            .ForMember(dest => dest.CompletedDaysRaw, opt => opt.MapFrom(src =>
-                src.CompletedDays == null
-                    ? "false,false,false,false,false,false,false"
-                    : string.Join(",", src.CompletedDays.Select(b => b.ToString().ToLower()))
-            ));
+            .ForMember(dest => dest.Completions, opt => opt.Ignore());
+
+        CreateMap<HabitCompletion, HabitCompletionDto>();
+
+        CreateMap<UserNotificationPreference, NotificationPreferenceDto>();
+        CreateMap<NotificationPreferenceDto, UserNotificationPreference>()
+            .ForMember(dest => dest.User, opt => opt.Ignore());
 
         CreateMap<User, UserDto>()
             .ForMember(dest => dest.Password, opt => opt.Ignore())

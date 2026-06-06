@@ -20,7 +20,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins("http://localhost:4210")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -29,7 +29,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddHttpsRedirection(options =>
 {
     options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
-    options.HttpsPort = 7000;
+    options.HttpsPort = 7010;
 });
 
 var app = builder.Build();
@@ -51,7 +51,7 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<SqliteContext>();
-    context.Database.EnsureCreated();
+    await SqliteSchemaMigrator.MigrateAsync(context);
 }
 
 app.Run();
