@@ -19,5 +19,14 @@ public static class ModuleIOC
         services.AddScoped<IHabitApplicationService, HabitApplicationService>();
         services.AddScoped<IHabitService, HabitService>();
         services.AddScoped<IHabitRepository, HabitRepository>();
+        services.AddScoped<IAnalyticsApplicationService, AnalyticsApplicationService>();
+        services.AddScoped<IAnalyticsService, AnalyticsService>();
+        services.AddScoped<IMotivationApplicationService, MotivationApplicationService>();
+        services.AddScoped<IMotivationService, MotivationService>();
+        services.AddScoped<IReminderApplicationService, ReminderApplicationService>();
+        services.AddScoped<IReminderService, ReminderService>();
+        services.AddScoped<INotificationPreferenceRepository, NotificationPreferenceRepository>();
+        services.AddScoped<IRecurrenceService, RecurrenceService>();
+        services.AddScoped<IDateService, BrasiliaDateService>();
     }
 }
