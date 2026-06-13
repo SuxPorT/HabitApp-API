@@ -41,6 +41,7 @@ public static class SqliteSchemaMigrator
             await CreateUserNotificationPreferencesTableAsync(connection);
             await ImportLegacyCompletedDaysAsync(connection);
             await LocalizeLegacyTextDataAsync(connection);
+            await DropLegacyHabitColumnsAsync(connection);
         }
         finally
         {
@@ -390,6 +391,19 @@ public static class SqliteSchemaMigrator
         await using var command = connection.CreateCommand();
         command.CommandText = commandText;
         await command.ExecuteNonQueryAsync();
+    }
+
+    private static async Task DropLegacyHabitColumnsAsync(DbConnection connection)
+    {
+        if (await ColumnExistsAsync(connection, "Habits", "Streak"))
+        {
+            await ExecuteNonQueryAsync(connection, "ALTER TABLE \"Habits\" DROP COLUMN \"Streak\";");
+        }
+
+        if (await ColumnExistsAsync(connection, "Habits", "CompletedDaysRaw"))
+        {
+            await ExecuteNonQueryAsync(connection, "ALTER TABLE \"Habits\" DROP COLUMN \"CompletedDaysRaw\";");
+        }
     }
 
     private static void AddParameter(DbCommand command, string name, object? value)

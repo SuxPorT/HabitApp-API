@@ -7,7 +7,7 @@ namespace HabitApp.API.Controllers;
 public class HabitController(IHabitApplicationService applicationService)
     : BaseController<HabitDto>(applicationService)
 {
-    [HttpGet("user/{userId}")]
+    [HttpGet("user/{userId:int}")]
     public async Task<ActionResult<IEnumerable<HabitDto>>> GetByUserId(int userId)
     {
         var habits = await applicationService.GetByUserIdAsync(userId);
